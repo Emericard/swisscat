@@ -15,7 +15,7 @@ def generate_launch_description():
     robot_description = LaunchConfiguration('robot_description')
     robot_namespace = LaunchConfiguration('robot_namespace')
     xacro_file = os.path.join(
-        get_package_share_directory('mob_rob_loca'),
+        get_package_share_directory('swisscat_simulation'),
         'urdf',
         'edison.urdf'
     )

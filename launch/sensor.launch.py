@@ -9,7 +9,7 @@ def get_share_file(package_name, file_name):
     return os.path.join(get_package_share_directory(package_name), file_name)
 
 def generate_launch_description():
-    rob_loca_dir = get_package_share_directory('mob_rob_loca')
+    rob_loca_dir = get_package_share_directory('swisscat_simulation')
     imu_config = os.path.join(rob_loca_dir,'config','bno055_params.yaml')
     # imu_config = os.path.join(get_package_share_directory('bno055'),'config','bno055_params.yaml')
 
@@ -32,13 +32,13 @@ def generate_launch_description():
     )
 
     ticks2odom_node = Node(
-        package='mob_rob_loca',
+        package='swisscat_simulation',
         executable='ticks2odom',
         output='screen',
     )
 
     marv2ekf_node = Node(
-        package='mob_rob_loca',
+        package='swisscat_simulation',
         executable='marv2ekf',
         output='screen',
     )

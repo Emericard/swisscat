@@ -20,7 +20,7 @@ from launch_ros.substitutions import FindPackageShare
 import os
 
 def generate_launch_description():
-    package_name = 'mob_rob_loca'
+    package_name = 'swisscat_simulation'
     params_path = 'params/ekf_em.yaml'
 
     pkg_share = FindPackageShare(package=package_name).find(package_name)

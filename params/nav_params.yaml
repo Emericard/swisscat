@@ -208,7 +208,7 @@ global_costmap_rclcpp_node:
 
 map_server:
   ros__parameters:
-    yaml_filename: "/home/ubuntu/Documents/ros2_ws/install/mob_rob_loca/share/mob_rob_loca/maps/circuit.yaml" # path hard defined, may be better to generalize this
+    yaml_filename: "/home/ubuntu/Documents/ros2_ws/install/swisscat/share/swisscat_simulation/maps/circuit.yaml" # path hard defined, may be better to generalize this
     topic_name: "map"
 
 map_saver:

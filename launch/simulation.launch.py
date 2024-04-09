@@ -7,23 +7,23 @@ from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
-   rob_loca_dir = get_package_share_directory('mob_rob_loca')
+   rob_loca_dir = get_package_share_directory('swisscat_simulation')
    map_path = os.path.join(rob_loca_dir, 'maps/circuit.yaml')
    nav2_params_path = os.path.join(rob_loca_dir, 'params/nav_params.yaml')
 
    sensor_conv_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
-         get_package_share_directory('mob_rob_loca'), 'launch'),
+         get_package_share_directory('swisscat_simulation'), 'launch'),
          '/sensor.launch.py'])
       )
    rviz_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
-         get_package_share_directory('mob_rob_loca'), 'launch'),
+         get_package_share_directory('swisscat_simulation'), 'launch'),
          '/rviz.launch.py'])
       )
    ekf_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
-         get_package_share_directory('mob_rob_loca'), 'launch'),
+         get_package_share_directory('swisscat_simulation'), 'launch'),
          '/ekf.launch.py'])
       )
 

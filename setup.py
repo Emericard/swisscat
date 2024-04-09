@@ -4,7 +4,7 @@ from setuptools import setup
 from distutils import sysconfig
 from distutils.extension import Extension
 
-package_name = 'mob_rob_loca'
+package_name = 'swisscat_simulation'
 
 setup(
     name=package_name,
@@ -32,13 +32,13 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-        'transforms = mob_rob_loca.transforms:main',
-        'ticks2odom = mob_rob_loca.tick_to_odom:main',
-        'marv2ekf = mob_rob_loca.marv_to_ekf:main',
-        'navwaypoints = mob_rob_loca.nav_waypoints:main',
-        'calib_odom = mob_rob_loca.calib_odom:main',
-        'sub_plot = mob_rob_loca.sub_plot:main',
-        'nav_manager = mob_rob_loca.nav_manager:main',
+        'transforms = swisscat_simulation.transforms:main',
+        'ticks2odom = swisscat_simulation.tick_to_odom:main',
+        'marv2ekf = swisscat_simulation.marv_to_ekf:main',
+        'navwaypoints = swisscat_simulation.nav_waypoints:main',
+        'calib_odom = swisscat_simulation.calib_odom:main',
+        'sub_plot = swisscat_simulation.sub_plot:main',
+        'nav_manager = swisscat_simulation.nav_manager:main',
         ],
     },
 )

@@ -9,7 +9,7 @@ import xacro
 def generate_launch_description():
     
     xacro_file = os.path.join(
-        get_package_share_directory('mob_rob_loca'),
+        get_package_share_directory('swisscat_simulation'),
         'urdf',
         'edison.urdf'
     )
@@ -27,7 +27,7 @@ def generate_launch_description():
     for i in range(2):
         spawn_robot_nodes.append(GroupAction([
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([get_package_share_directory('mob_rob_loca'),
+                PythonLaunchDescriptionSource([get_package_share_directory('swisscat_simulation'),
                                                '/launch/',
                                                'one_robot_with_name.launch.py']),
                 launch_arguments={
