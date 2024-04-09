@@ -2,6 +2,9 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
+import os
+import xacro
 
 def generate_launch_description():
     robot_name = LaunchConfiguration('robot_name')
@@ -11,12 +14,18 @@ def generate_launch_description():
     init_pose_Y = LaunchConfiguration('init_pose_Y')
     robot_description = LaunchConfiguration('robot_description')
     robot_namespace = LaunchConfiguration('robot_namespace')
+    xacro_file = os.path.join(
+        get_package_share_directory('mob_rob_loca'),
+        'urdf',
+        'edison.urdf'
+    )
 
+    robot_description = xacro.process_file(xacro_file).toxml()
     return LaunchDescription([
         DeclareLaunchArgument(
             'robot_name',
-            default_value='robot',
-            description='Robot model name'
+            default_value= 'robototest',
+            description= 'robot_description'
         ),
         DeclareLaunchArgument(
             'init_pose',
@@ -25,7 +34,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'robot_description',
-            default_value='',
+            default_value=robot_description,
             description='Robot description parameter'
         ),
         Node(
@@ -42,11 +51,5 @@ def generate_launch_description():
                        '-Y', init_pose_Y],
             parameters=[robot_description]
         ),
-        Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            output='screen',
-            parameters=[{'robot_description': robot_description}]
-        ),
+        
     ])

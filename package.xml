@@ -1,44 +1,35 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>swisscat_robot</name>
-  <version>0.0.1</version>
-  <description>TODO</description>
-  
-  <maintainer email="edy.mariano@epfl.ch">Edy Mariano</maintainer>
-  <author>Edy Mariano</author>
-  <author>Agatha Duranceau</author>
-  <author>Yasmine El Goumi</author>
-  <author>Jean-Charles Cousty</author>
-
-  <license>BSD</license>
-
-  <exec_depend>ros2launch</exec_depend>
-
-  <depend>rclpy</depend>
-  <depend>ament_index_python</depend>
-  <depend>launch_ros</depend>
-  <depend>robot_state_publisher</depend>
-  <depend>rviz2</depend>
-  <depend>xacro</depend>
-  <depend>tf_transformations</depend>
-  <depend>geometry_msgs</depend>
-  <depend>nav2_bringup</depend>
-  <depend>nav_msgs</depend>
-  <depend>rclcpp</depend>
-  <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
+  <name>mob_rob_loca</name>
+  <version>0.0.0</version>
+  <description>Localization of a mobile robot, the Edison, using sensor fusing.</description>
+  <maintainer email="yannis.coderey@epfl.ch">coderey</maintainer>
+  <license>Apache 2.0 </license>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+   <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>time</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_transformations</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend> /<!-- <if apt install doesn't work, try re-adding apt key https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html</build_depend> -->
+  <exec_depend>nav2_map_server</exec_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
+  <depend>action_msgs</depend>
+  <!-- <build_depend>rosidl_default_generators</build_depend> -->
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+  
   <export>
-   <build_type>ament_python</build_type>
+    <build_type>ament_python</build_type>
   </export>
-
-
 </package>

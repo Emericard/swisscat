@@ -1,19 +1,17 @@
 from launch import LaunchDescription
-from launch.actions import  ExecuteProcess, DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command
+from launch.actions import  DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from tempfile import NamedTemporaryFile
 import os
 import xacro
 
 def generate_launch_description():
     
     xacro_file = os.path.join(
-        get_package_share_directory('swisscat_robot'),
+        get_package_share_directory('mob_rob_loca'),
         'urdf',
-        'edymobile_theo.urdf.xacro'
+        'edison.urdf'
     )
 
     robot_description_config = xacro.process_file(xacro_file)
@@ -29,7 +27,7 @@ def generate_launch_description():
     for i in range(2):
         spawn_robot_nodes.append(GroupAction([
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([get_package_share_directory('swisscat_robot'),
+                PythonLaunchDescriptionSource([get_package_share_directory('mob_rob_loca'),
                                                '/launch/',
                                                'one_robot_with_name.launch.py']),
                 launch_arguments={

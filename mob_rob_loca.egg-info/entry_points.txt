@@ -1,0 +1,8 @@
+[console_scripts]
+calib_odom = mob_rob_loca.calib_odom:main
+marv2ekf = mob_rob_loca.marv_to_ekf:main
+nav_manager = mob_rob_loca.nav_manager:main
+navwaypoints = mob_rob_loca.nav_waypoints:main
+sub_plot = mob_rob_loca.sub_plot:main
+ticks2odom = mob_rob_loca.tick_to_odom:main
+transforms = mob_rob_loca.transforms:main

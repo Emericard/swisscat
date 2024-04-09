@@ -1,52 +1,44 @@
 import os
 from glob import glob
-from setuptools import setup, find_packages
+from setuptools import setup
+from distutils import sysconfig
+from distutils.extension import Extension
 
-package_name = 'swisscat_robot'
+package_name = 'mob_rob_loca'
 
 setup(
     name=package_name,
-    version='0.0.0',
-    # Packages to export
-    packages=find_packages(),
-    # Files we want to install, specifically launch files
+    version='0.0.1',
+    packages=[package_name, f'{package_name}.submodules'],
     data_files=[
-        # Install marker file in the package index
-        ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
-        # Include our package.xml file
-        (os.path.join('share', package_name), ['package.xml']),
-        # Include all launch files.
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*.launch.py'))),
-        (os.path.join('share', package_name, 'config'), glob(os.path.join('config', '*.*'))),
-        (os.path.join('share', package_name, 'map'), glob(os.path.join('map', '*.pgm')) +
-         glob(os.path.join('map', '*.yaml'))),
-        (os.path.join('share', package_name, 'rviz'), glob(os.path.join('rviz', '*.*'))),
-        (os.path.join('share', package_name, 'urdf'), glob(os.path.join('urdf', '*.*'))),
-        (os.path.join('share', package_name, 'urdf', 'utils'), glob(os.path.join('urdf', 'utils', '*.*'))),
-        (os.path.join('share', package_name, 'worlds'), glob(os.path.join('worlds', '*.world')))
+        (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
+        (os.path.join('share', package_name, 'rviz'), glob('rviz/*')),
+        (os.path.join('share', package_name, 'maps'), glob('maps/*')),
+        (os.path.join('share', package_name, 'params'), glob('params/*')),
+        (os.path.join('share', package_name, 'config'), glob('config/*')),
+        (os.path.join('share', package_name, 'action'), glob('action/*')),
+        (os.path.join('share', package_name, 'srv'), glob('srv/*')),
     ],
-    # This is important as well
     install_requires=['setuptools'],
     zip_safe=True,
-    author='ROS 2 Developer',
-    author_email='ros2@ros.com',
-    maintainer='ROS 2 Developer',
-    maintainer_email='ros2@ros.com',
-    keywords=['foo', 'bar'],
-    classifiers=[
-        'Intended Audience :: Developers',
-        'License :: TODO',
-        'Programming Language :: Python',
-        'Topic :: Software Development',
-    ],
-    description='My awesome package.',
-    license='TODO',
-    # Like the CMakeLists add_executable macro, you can add your python
-    # scripts here.
+    maintainer='coderey',
+    maintainer_email='yannis.coderey@epfl.ch',
+    description='TODO: Package description',
+    license='Apache 2.0',
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'fleet_manager = swisscat_robot.fleet_manager:main',
-            'controller = swisscat_robot.controller:main'
+        'transforms = mob_rob_loca.transforms:main',
+        'ticks2odom = mob_rob_loca.tick_to_odom:main',
+        'marv2ekf = mob_rob_loca.marv_to_ekf:main',
+        'navwaypoints = mob_rob_loca.nav_waypoints:main',
+        'calib_odom = mob_rob_loca.calib_odom:main',
+        'sub_plot = mob_rob_loca.sub_plot:main',
+        'nav_manager = mob_rob_loca.nav_manager:main',
         ],
     },
 )
