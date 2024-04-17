@@ -247,20 +247,73 @@
     </inertial>
   </link>
 
-  <!-- Diff drive -->
-	<plugin
-    filename="gz-sim-diff-drive-system"
-    name="gz::sim::systems::DiffDrive">
-	<ros>
-		<namespace>$(arg robotNamespace)</namespace>
-		</ros>
-    <left_joint>left_wheel_joint</left_joint>
-    <right_joint>right_wheel_joint</right_joint>
-    <wheel_separation>0.0955</wheel_separation>
-    <wheel_radius>0.044</wheel_radius>
-    <odom_publish_frequency>1</odom_publish_frequency>
-    <topic>cmd_vel</topic>
-</plugin>
+<!-- ********************** TRANSMISSION *********************************  -->
+  
+    <transmission name="left_wheel_trans">
+	<type>transmission_interface/SimpleTransmission</type>
+	<actuator name="$left_wheel_motor">
+	<mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+	<joint name="left_wheel_joint">
+	<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+	</joint>
+  </transmission>
+  
+
+  <transmission name="right_wheel_trans">
+	<type>transmission_interface/SimpleTransmission</type>
+	<actuator name="$right_wheel_motor">
+	<mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+	<joint name="right_wheel_joint">
+	<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+	</joint>
+  </transmission>
+
+  <!-- ********************** GAZEBO *********************************  -->
+	<gazebo reference="right_wheel">
+		<material>Gazebo/Black</material>
+		<mu1 value="200.0"/>
+		<mu2 value="100.0"/>
+		<kp value="10000000.0" />
+		<kd value="1.0" />
+		<fdir1 value="1 0 0"/>
+	</gazebo>
+	<gazebo reference="left_wheel">
+		<material>Gazebo/Black</material>
+		<mu1 value="200.0"/>
+	  	<mu2 value="100.0"/>
+	  	<kp value="10000000.0" />
+	  	<kd value="1.0" />
+	  	<fdir1 value="1 0 0"/>
+	</gazebo>
+	<gazebo reference="base_link">
+		<material>Gazebo/White</material>
+	</gazebo>
+	
+  	 
+
+	<!-- Diff drive -->
+	<gazebo>
+		<plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+			<alwaysOn>true</alwaysOn>
+			<updateRate>10</updateRate>
+			<max_wheel_torque>100</max_wheel_torque>
+			<left_joint>joint_wheel_left</left_joint>
+			<right_joint>joint_wheel_right</right_joint>
+			<wheel_separation>0.0955</wheel_separation>
+			<wheel_diameter>0.044</wheel_diameter>
+            <command_topic>cmd_vel</command_topic>
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>
+            <odometry_topic>odom</odometry_topic>
+            <odometry_frame>odom</odometry_frame>
+			<robot_base_frame>base_link</robot_base_frame>
+			<ros>
+                <namespace>$(arg robotNamespace)</namespace>
+            </ros>
+		</plugin>
+	</gazebo>
 		
 		
 

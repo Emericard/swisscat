@@ -39,9 +39,11 @@ def generate_launch_description():
                         }.items()
       )
 
-   gazebo = ExecuteProcess(
-      cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so', '-s', 'libgazebo_ros_init.so'],
-      output='screen')
+   gazebo_launch = IncludeLaunchDescription(
+      PythonLaunchDescriptionSource(
+           os.path.join(rob_loca_dir, 'launch', 'gazebo.launch.py')
+       )
+   )
 
    spawn_edymobiles_launch = IncludeLaunchDescription(
        PythonLaunchDescriptionSource(
@@ -51,10 +53,11 @@ def generate_launch_description():
 
    
    return LaunchDescription([
+      rviz_launch,
+      spawn_edymobiles_launch,
       sensor_conv_launch,
       ekf_launch,
-      rviz_launch,
       nav_launch,
-      gazebo,
-      spawn_edymobiles_launch,
+      gazebo_launch,
+
    ])

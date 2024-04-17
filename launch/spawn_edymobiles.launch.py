@@ -1,6 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import  DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
-from launch_ros.actions import Node
+from launch.actions import  ExecuteProcess, GroupAction, IncludeLaunchDescription
 from ament_index_python.packages import get_package_share_directory
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 import os
@@ -24,7 +23,7 @@ def generate_launch_description():
     robot_names = ['Robot1', 'Robot2', 'Robot3', 'Robot4', 'Robot5']
 
     spawn_robot_nodes = []
-    for i in range(2):
+    for i in range(3):
         spawn_robot_nodes.append(GroupAction([
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([get_package_share_directory('swisscat_simulation'),
@@ -42,31 +41,7 @@ def generate_launch_description():
             )
         ]))
 
+
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'robotNamespace1',
-            default_value='robot1',
-            description='Robot 1 namespace'
-        ),
-        DeclareLaunchArgument(
-            'robotNamespace2',
-            default_value='robot2',
-            description='Robot 2 namespace'
-        ),
-        DeclareLaunchArgument(
-            'robotNamespace3',
-            default_value='robot3',
-            description='Robot 3 namespace'
-        ),
-        DeclareLaunchArgument(
-            'robotNamespace4',
-            default_value='robot4',
-            description='Robot 4 namespace'
-        ),
-        DeclareLaunchArgument(
-            'robotNamespace5',
-            default_value='robot5',
-            description='Robot 5 namespace'
-        ),
-        *spawn_robot_nodes
+        *spawn_robot_nodes,
     ])

@@ -5,12 +5,8 @@ from launch.actions import ExecuteProcess
 from launch.substitutions import LaunchConfiguration, FindExecutable
 from launch_ros.actions import Node
 
-def get_share_file(package_name, file_name):
-    return os.path.join(get_package_share_directory(package_name), file_name)
-
 def generate_launch_description():
     rob_loca_dir = get_package_share_directory('swisscat_simulation')
-    rvizconfig = LaunchConfiguration('rvizconfig', default=os.path.join(rob_loca_dir, 'rviz', 'loca.rviz'))
     urdf_path = os.path.join(rob_loca_dir, 'urdf/edison.urdf')
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
@@ -30,18 +26,15 @@ def generate_launch_description():
         arguments=[urdf_path],
     )
     
-
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d', rvizconfig],
-        output='screen',
-        remappings=[('/odom', '/odometry/filtered')],
-    )
-
+    gazebo = ExecuteProcess(
+        cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so', '-s', 'libgazebo_ros_init.so'],
+        output='screen')
+    
+    
+    
     return LaunchDescription([
-        rviz_node,
-        robot_state_publisher_node,
-        transforms_node,
-        joint_state_publisher_node
+        # transforms_node,
+        # robot_state_publisher_node,
+        # joint_state_publisher_node,
+        gazebo
     ])
