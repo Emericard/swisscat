@@ -1,8 +1,0 @@
-Metadata-Version: 2.1
-Name: swisscat_simulation
-Version: 0.0.1
-Summary: TODO: Package description
-Maintainer: coderey
-Maintainer-email: yannis.coderey@epfl.ch
-License: Apache 2.0
-Requires-Dist: setuptools

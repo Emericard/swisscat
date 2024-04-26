@@ -6,7 +6,7 @@ bt_navigator:
   ros__parameters:
     global_frame: map
     robot_base_frame: base_link
-    odom_topic: /odometry/global # topic to subscribe to, this one comes from ekf pkg
+    odom_topic: /namespace/odometry/global # topic to subscribe to, this one comes from ekf pkg
     bt_loop_duration: 10
     default_server_timeout: 20 
     enable_groot_monitoring: False
@@ -20,8 +20,7 @@ bt_navigator:
     # default_nav_through_poses_bt_xml: "/home/coderey/ros2_ws/src/mob_rob_loca/config/navthroughposes.xml"
     plugin_lib_names:
         - nav2_compute_path_to_pose_action_bt_node
-        - nav2_compute_path_sudo apt install ./foxglove-studio-*.debthrough_poses_action_bt_node
-        - nav2_follow_path_action_bt_node
+#        - nav2_follow_path_action_bt_node
         - nav2_back_up_action_bt_node
         - nav2_spin_action_bt_node
         - nav2_wait_action_bt_node
@@ -62,7 +61,7 @@ controller_server:
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5 # 0.001 changed because differential robot
     min_theta_velocity_threshold: 0.001
-    odom_topic: /odometry/global
+    odom_topic: /namespace/odometry/global
     failure_tolerance: 0.5
     progress_checker_plugins: ["progress_checker"]
     #goal_checker_plugin: "goal_checker" # pk pas general ?
@@ -273,7 +272,7 @@ velocity_smoother:
     min_velocity: [-0.26, 0.0, -1.0]
     max_accel: [2.5, 0.0, 3.2]
     max_decel: [-2.5, 0.0, -3.2]
-    odom_topic: /odometry/global
+    odom_topic: /namespace/odometry/global
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0

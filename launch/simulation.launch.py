@@ -8,8 +8,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
    rob_loca_dir = get_package_share_directory('swisscat_simulation')
-   map_path = os.path.join(rob_loca_dir, 'maps/circuit.yaml')
-   nav2_params_path = os.path.join(rob_loca_dir, 'params/nav_params.yaml')
 
    sensor_conv_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
@@ -29,20 +27,13 @@ def generate_launch_description():
    map2gazebo_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
          get_package_share_directory('swisscat_simulation'), 'launch'),
-         '/map2gazebo.launch'])
+         '/map2gazebo.launch.py'])
       )
    nav_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
-         get_package_share_directory('nav2_bringup'), 'launch'),
-         '/bringup_launch.py']), 
-         launch_arguments= {
-                        'map': map_path,
-                        'use_sim_time': 'True',
-                        'params_file': nav2_params_path,
-                        # 'autostart': 'true',
-                        }.items()
-      )
-
+         get_package_share_directory('swisscat_simulation'), 'launch'),
+         '/nav2.launch.py'])
+   )
    gazebo_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource(
            os.path.join(rob_loca_dir, 'launch', 'gazebo.launch.py')
