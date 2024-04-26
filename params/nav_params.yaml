@@ -1,3 +1,7 @@
+/**:
+ros__parameters:
+use_sim_time : True
+
 bt_navigator:
   ros__parameters:
     global_frame: map
@@ -16,7 +20,7 @@ bt_navigator:
     # default_nav_through_poses_bt_xml: "/home/coderey/ros2_ws/src/mob_rob_loca/config/navthroughposes.xml"
     plugin_lib_names:
         - nav2_compute_path_to_pose_action_bt_node
-        - nav2_compute_path_through_poses_action_bt_node
+        - nav2_compute_path_sudo apt install ./foxglove-studio-*.debthrough_poses_action_bt_node
         - nav2_follow_path_action_bt_node
         - nav2_back_up_action_bt_node
         - nav2_spin_action_bt_node
@@ -128,8 +132,8 @@ controller_server_rclcpp_node:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 5.0
-      publish_frequency: 2.0
+      update_frequency: 1.0
+      publish_frequency: 1.0
       global_frame: odom
       robot_base_frame: base_link
       use_sim_time: True
@@ -216,7 +220,7 @@ map_saver:
     save_map_timeout: 5.0
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
-    map_subscribe_transient_local: True
+    # map_subscribe_transient_local: True
 
 planner_server: # some differences to check
   ros__parameters:
@@ -242,7 +246,7 @@ smoother_server:
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
-      tolerance: 1.0e-4
+      tolerance: 1.0e-3
       max_its: 1000
       do_refinement: True
 
@@ -262,7 +266,7 @@ waypoint_follower: # used for tests or displaying robot task during events, norm
 
 velocity_smoother:
   ros__parameters:
-    smoothing_frequency: 20.0
+    smoothing_frequency: 5.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
     max_velocity: [0.26, 0.0, 1.0]

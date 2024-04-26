@@ -1,0 +1,9 @@
+<launch>
+  <arg name="params_file" default="$(find swisscat_simulation)/config/map2gazebo_defaults.yaml" />
+  <arg name="export_dir" default="$(find swisscat_simulation)/models/map/meshes" />
+
+  <node name="map2gazebo" pkg="swisscat_simulation" type="map2gazebo.py" output="screen" >
+    <param name="export_dir" value="$(arg export_dir)" />
+    <rosparam command="load" file="$(arg params_file)" />
+  </node>
+</launch>

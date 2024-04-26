@@ -1,8 +1,9 @@
 import os
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
-from launch.substitutions import LaunchConfiguration, FindExecutable
+from launch.actions import DeclareLaunchArgument
+
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def get_share_file(package_name, file_name):
@@ -17,7 +18,7 @@ def generate_launch_description():
         executable='robot_state_publisher',
         name='robot_state_publisher',
         output='both',
-        parameters=[{'robot_description': open(urdf_path, 'r').read()}]
+        parameters=[{'robot_description': open(urdf_path, 'r').read()}],
     )
     transforms_node = Node(
         package='swisscat_simulation',
@@ -28,8 +29,8 @@ def generate_launch_description():
         package='joint_state_publisher',
         executable='joint_state_publisher',
         arguments=[urdf_path],
+        # parameters=[{'use_sim_time': 'true'}],
     )
-    
 
     rviz_node = Node(
         package='rviz2',
