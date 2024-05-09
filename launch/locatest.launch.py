@@ -9,7 +9,7 @@ import xacro
 def generate_launch_description():
 
     rob_loca_dir = get_package_share_directory('swisscat_simulation')
-    map_path = os.path.join(rob_loca_dir, 'maps', 'map_atelier.yaml')
+    map_path = os.path.join(rob_loca_dir, 'maps', 'circuit.yaml')
     nav2_params_path = os.path.join(rob_loca_dir, 'params/nav_params.yaml')
     init_poses = ['-3.18', '-3.595', '0', '1.5707',
                   '-3.18', '-4.548', '0', '1.5707',

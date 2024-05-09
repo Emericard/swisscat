@@ -33,6 +33,7 @@ setup(
     entry_points={
         'console_scripts': [
         'transforms = swisscat_simulation.transforms:main',
+        'map_publisher = swisscat_simulation.map_publisher:main',
         'ticks2odom = swisscat_simulation.tick_to_odom:main',
         'marv2ekf = swisscat_simulation.marv_to_ekf:main',
         'navwaypoints = swisscat_simulation.nav_waypoints:main',

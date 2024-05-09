@@ -46,7 +46,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         rviz_node,
-        static_transform_publisher_node,
+        #static_transform_publisher_node,
         transforms_node,
         joint_state_publisher_node
     ])

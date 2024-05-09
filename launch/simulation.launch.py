@@ -49,9 +49,9 @@ def generate_launch_description():
    
    return LaunchDescription([
       rviz_launch,
-      #spawn_edymobiles_launch,
+      spawn_edymobiles_launch,
       #sensor_conv_launch,
-      #map2gazebo_launch,
+      map2gazebo_launch,
       #ekf_launch,
       nav_launch,
       gazebo_launch,
