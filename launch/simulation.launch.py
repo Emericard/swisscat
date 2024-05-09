@@ -32,7 +32,7 @@ def generate_launch_description():
    nav_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
          get_package_share_directory('swisscat_simulation'), 'launch'),
-         '/nav2.launch.py'])
+         '/locatest.launch.py'])
    )
    gazebo_launch = IncludeLaunchDescription(
       PythonLaunchDescriptionSource(
@@ -49,10 +49,10 @@ def generate_launch_description():
    
    return LaunchDescription([
       rviz_launch,
-      spawn_edymobiles_launch,
-      sensor_conv_launch,
-      map2gazebo_launch,
-      ekf_launch,
+      #spawn_edymobiles_launch,
+      #sensor_conv_launch,
+      #map2gazebo_launch,
+      #ekf_launch,
       nav_launch,
       gazebo_launch,
 

@@ -14,18 +14,12 @@ def generate_launch_description():
     init_pose_Y = LaunchConfiguration('init_pose_Y')
     robot_description = LaunchConfiguration('robot_description')
     robot_namespace = LaunchConfiguration('robot_namespace')
-    xacro_file = os.path.join(
-        get_package_share_directory('swisscat_simulation'),
-        'urdf',
-        'edison.urdf'
-    )
 
-    robot_description = xacro.process_file(xacro_file).toxml()
     return LaunchDescription([
         DeclareLaunchArgument(
             'robot_name',
-            default_value= 'robototest',
-            description= 'robot_description'
+            default_value='robot',
+            description='Robot model name'
         ),
         DeclareLaunchArgument(
             'init_pose',
@@ -34,7 +28,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'robot_description',
-            default_value=robot_description,
+            default_value='',
             description='Robot description parameter'
         ),
         Node(
@@ -51,5 +45,11 @@ def generate_launch_description():
                        '-Y', init_pose_Y],
             parameters=[robot_description]
         ),
-        
+        Node(
+            package='robot_state_publisher',
+            executable='robot_state_publisher',
+            name='robot_state_publisher',
+            output='screen',
+            parameters=[{'robot_description': robot_description}]
+        ),
     ])
