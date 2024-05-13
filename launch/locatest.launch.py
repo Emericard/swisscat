@@ -16,7 +16,7 @@ def generate_launch_description():
                   '-1.28', '3.07', '0', '1.5707',
                   '1.10', '-3.595', '0', '1.5707',
                   '1.10', '-4.548', '0', '1.5707']
-    robot_names = ['Robot1', 'Robot2', 'Robot3']
+    robot_names = ['Robot1', 'Robot2']
     
     launches = []
     for i in range(len(robot_names)):

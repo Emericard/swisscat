@@ -40,6 +40,7 @@ setup(
         'calib_odom = swisscat_simulation.calib_odom:main',
         'sub_plot = swisscat_simulation.sub_plot:main',
         'nav_manager = swisscat_simulation.nav_manager:main',
+        'overtake_node = swisscat_simulation.overtake:main',
         'map2gazebo = swisscat_simulation.map2gazebo:main',
         ],
     },

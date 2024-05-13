@@ -43,9 +43,16 @@ def generate_launch_description():
         output='screen',
     )
 
+    overtake_node = Node(
+        package='swisscat_simulation',
+        executable='overtake_node',
+        output='screen',
+    )
+
     return LaunchDescription([
         # marvelmind_ros2_config,  # comment both lines when testing, avoids getting repetitive log messages
         # marvelmind_ros2_node,
         marv2ekf_node,
         ticks2odom_node,
+        overtake_node,
     ])

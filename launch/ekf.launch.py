@@ -32,6 +32,6 @@ def generate_launch_description():
             name='ekf_filter_node_map',
             output='screen',
             parameters=[robot_localization_file_path],
-            remappings=[('/odometry/filtered', 'odometry/global')],
+            remappings=[('/odometry/filtered', 'odom')],
         ),
 ])
