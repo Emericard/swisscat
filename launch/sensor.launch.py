@@ -54,5 +54,5 @@ def generate_launch_description():
         # marvelmind_ros2_node,
         marv2ekf_node,
         ticks2odom_node,
-        overtake_node,
+        #overtake_node,
     ])

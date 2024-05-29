@@ -1,61 +1,52 @@
 import cv2
 import numpy as np
 import trimesh
+from matplotlib.tri import Triangulation
+import yaml
+import argparse
+import os
+import sys
 
-import rclpy
-from rclpy.node import Node
-from nav_msgs.msg import OccupancyGrid
-
-class MapConverter(Node):
-    def __init__(self, map_topic, threshold=1, height=2.0):
-        super().__init__('swisscat_simulation')
-        self.test_map_pub = self.create_publisher(OccupancyGrid, 'test_map', 1)
-        self.map_sub = self.create_subscription(OccupancyGrid, map_topic, self.map_callback, 1)
+class MapConverter():
+    def __init__(self, map_dir, export_dir, threshold=105, height=2.0):
+        
         self.threshold = threshold
         self.height = height
+        self.export_dir = export_dir
+        self.map_dir = map_dir
 
-    def map_callback(self, map_msg):
-        self.get_logger().info("Received map")
-        map_dims = (map_msg.info.height, map_msg.info.width)
-        map_array = np.array(map_msg.data).reshape(map_dims)
+    def map_callback(self):
+        
+        map_array = cv2.imread(self.map_dir)
+        map_array = cv2.flip(map_array, 0)
+        print(f'loading map file: {self.map_dir}')
+        try:
+            map_array = cv2.cvtColor(map_array, cv2.COLOR_BGR2GRAY)
+        except cv2.error as err:
+            print(err, "Conversion failed: Invalid image input, please check your file path")    
+            sys.exit()
+        info_dir = self.map_dir.replace('pgm','yaml')
 
+        with open(info_dir, 'r') as stream:
+            map_info = yaml.load(stream, Loader=yaml.FullLoader) 
+        
         # set all -1 (unknown) values to 0 (unoccupied)
         map_array[map_array < 0] = 0
         contours = self.get_occupied_regions(map_array)
-        meshes = [self.contour_to_mesh(c, map_msg.info) for c in contours]
+        print('Processing...')
+        meshes = [self.contour_to_mesh(c, map_info) for c in contours]
 
         corners = list(np.vstack(contours))
         corners = [c[0] for c in corners]
-        self.publish_test_map(corners, map_msg.info, map_msg.header)
         mesh = trimesh.util.concatenate(meshes)
-
-        # Export as STL or DAE
-        mesh_type = self.get_parameter('mesh_type').value
-        export_dir = self.get_parameter('export_dir').value
-        if mesh_type == "stl":
-            with open(export_dir + "/map.stl", 'w') as f:
-                mesh.export(f, "stl")
-            self.get_logger().info("Exported STL. You can shut down this node now")
-        elif mesh_type == "dae":
-            with open(export_dir + "/map.dae", 'w') as f:
-                f.write(trimesh.exchange.dae.export_collada(mesh))
-            self.get_logger().info("Exported DAE. You can shut down this node now")
-
-    def publish_test_map(self, points, metadata, map_header):
-        """
-        For testing purposes, publishes a map highlighting certain points.
-        points is a list of tuples (x, y) in the map's coordinate system.
-        """
-        test_map = np.zeros((metadata.height, metadata.width))
-        for x, y in points:
-            test_map[y, x] = 100
-        test_map_msg = OccupancyGrid()
-        test_map_msg.header = map_header
-        test_map_msg.header.stamp = self.get_clock().now().to_msg()
-        test_map_msg.info = metadata
-        test_map_msg.data = list(np.ravel(test_map))
-        self.test_map_pub.publish(test_map_msg)
-
+        if not self.export_dir.endswith('/'):
+            self.export_dir = self.export_dir + '/'
+        file_dir = self.export_dir + map_info['image'].replace('pgm','stl')
+        print(f'export file: {file_dir}')
+        
+        with open(file_dir, 'wb') as f:
+            mesh.export(f, "stl")
+    
     def get_occupied_regions(self, map_array):
         """
         Get occupied regions of map
@@ -63,24 +54,31 @@ class MapConverter(Node):
         map_array = map_array.astype(np.uint8)
         _, thresh_map = cv2.threshold(
                 map_array, self.threshold, 100, cv2.THRESH_BINARY)
-        image, contours, hierarchy = cv2.findContours(
+        contours, hierarchy = cv2.findContours(
                 thresh_map, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        # Using cv2.RETR_CCOMP classifies external contours at top level of
+        # hierarchy and interior contours at second level.  
+        # If the whole space is enclosed by walls RETR_EXTERNAL will exclude
+        # all interior obstacles e.g. furniture.
+        # https://docs.opencv.org/trunk/d9/d8b/tutorial_py_contours_hierarchy.html
         hierarchy = hierarchy[0]
-        corner_idxs = [i for i in range(len(contours)) if hierarchy[i][3] == -1]
-        return [contours[i] for i in corner_idxs]
+        output_contours = []
+        for idx, contour in enumerate(contours):
+            output_contours.append(contour) if 0 not in contour else print('Remove image boundary')
+            
+        return output_contours
 
     def contour_to_mesh(self, contour, metadata):
         height = np.array([0, 0, self.height])
-        s3 = 3**0.5 / 3.
         meshes = []
         for point in contour:
             x, y = point[0]
             vertices = []
             new_vertices = [
-                    coords_to_loc((x, y), metadata),
-                    coords_to_loc((x, y+1), metadata),
-                    coords_to_loc((x+1, y), metadata),
-                    coords_to_loc((x+1, y+1), metadata)]
+                    self.coords_to_loc((x, y), metadata),
+                    self.coords_to_loc((x, y+1), metadata),
+                    self.coords_to_loc((x+1, y), metadata),
+                    self.coords_to_loc((x+1, y+1), metadata)]
             vertices.extend(new_vertices)
             vertices.extend([v + height for v in new_vertices])
             faces = [[0, 2, 4],
@@ -97,27 +95,37 @@ class MapConverter(Node):
                      [7, 3, 5]]
             mesh = trimesh.Trimesh(vertices=vertices, faces=faces)
             if not mesh.is_volume:
-                self.get_logger().debug("Fixing mesh normals")
                 mesh.fix_normals()
             meshes.append(mesh)
         mesh = trimesh.util.concatenate(meshes)
         mesh.remove_duplicate_faces()
+        # mesh will still have internal faces.  Would be better to get
+        # all duplicate faces and remove both of them, since duplicate faces
+        # are guaranteed to be internal faces
         return mesh
 
-def coords_to_loc(coords, metadata):
-    x, y = coords
-    loc_x = x * metadata.resolution + metadata.origin.position.x
-    loc_y = y * metadata.resolution + metadata.origin.position.y
-    return np.array([loc_x, loc_y, 0.0])
+    def coords_to_loc(self,coords, metadata):
+        x, y = coords
+        loc_x = x * metadata['resolution'] + metadata['origin'][0]
+        loc_y = y * metadata['resolution'] + metadata['origin'][1]
+        # TODO: transform (x*res, y*res, 0.0) by Pose map_metadata.origin
+        # instead of assuming origin is at z=0 with no rotation wrt map frame
+        return np.array([loc_x, loc_y, 0.0])
 
-def main(args=None):
-    rclpy.init(args=args)
-    map_topic = 'map'  # default topic
-    occupied_thresh = 1  # default threshold
-    box_height = 2.0  # default height
-    converter = MapConverter(map_topic, threshold=occupied_thresh, height=box_height)
-    rclpy.spin(converter)
-    rclpy.shutdown()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+    parser.add_argument(
+        '--map_dir', type=str, required=True,
+        help='File name of the map to convert'
+    )
 
-if __name__ == '__main__':
-    main()
+    parser.add_argument(
+        '--export_dir', type=str, default=os.path.abspath('.'),
+        help='Mesh output directory'
+    )
+
+    option = parser.parse_args()
+
+    Converter = MapConverter(option.map_dir, option.export_dir)
+    Converter.map_callback()
+    print('Conversion Done')

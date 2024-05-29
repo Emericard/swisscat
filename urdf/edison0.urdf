@@ -9,8 +9,8 @@
 	</material>
 	
    <link name="base_link" />
+     <origin xyz="0 0 0" rpy="0 0 0"/>
 	<xacro:arg name="robotNamespace" default="/edison" />
-
    <!-- ********************** ROBOT BASE *********************************  -->
    <link name="base_footprint" >
 	<visual>
@@ -128,6 +128,8 @@
    	<parent link="base_footprint"/>
    	<child link="left_wheel"/>
    	<origin xyz="0 -0.115 -0.0425"/>
+	<axis xyz="0 1 0"/>
+
 	<inertial>
 	  <mass value="0.2"/>
 	  <inertia ixx="0.0000125" ixy="0.0" ixz="0.0" iyy="0.0000125" iyz="0.0" izz="0.0000125"/>
@@ -137,6 +139,7 @@
   	<parent link="base_footprint"/>
   	<child link="right_wheel"/>
   	<origin xyz="0 0.115 -0.0425"/>
+	<axis xyz="0 1 0"/>
 	<inertial>
 	  <mass value="0.2"/>
 	  <inertia ixx="0.0000125" ixy="0.0" ixz="0.0" iyy="0.0000125" iyz="0.0" izz="0.0000125"/>

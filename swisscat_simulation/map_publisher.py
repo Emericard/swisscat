@@ -7,7 +7,7 @@ from nav_msgs.msg import OccupancyGrid
 import numpy as np
 
 rob_loca_dir = get_package_share_directory('swisscat_simulation')
-map_path = os.path.join(rob_loca_dir, 'maps/circuit_mr.png')
+map_path = os.path.join(rob_loca_dir, 'maps/overtake_map.png')
 
 def create_occupancy_grid_from_image(image_path, resolution):
     # Read the PNG image using OpenCV
@@ -45,7 +45,7 @@ def create_occupancy_grid_from_image(image_path, resolution):
 class MapPublisher(Node):
     def __init__(self):
         super().__init__('map_publisher')
-        self.map = create_occupancy_grid_from_image(map_path, 0.01)
+        self.map = create_occupancy_grid_from_image(map_path, 0.1)
         self.publisher_ = self.create_publisher(OccupancyGrid, 'map', 10)
         self.timer_ = self.create_timer(5.0, self.publish_map)
         self.map_width = self.map.info.width  # Define map width in cells
@@ -57,11 +57,11 @@ class MapPublisher(Node):
         map_msg = OccupancyGrid()
         map_msg.header.stamp = self.get_clock().now().to_msg()
         map_msg.header.frame_id = 'map'
-        map_msg.info.resolution = 1.0  # Set map resolution
+        map_msg.info.resolution = 0.1  # Set map resolution
         map_msg.info.width = self.map_width
         map_msg.info.height = self.map_height
-        map_msg.info.origin.position.x = 0.0
-        map_msg.info.origin.position.y = 0.0
+        map_msg.info.origin.position.x = -5.0
+        map_msg.info.origin.position.y = -5.0
         map_msg.info.origin.position.z = 0.0
         map_msg.info.origin.orientation.x = 0.0
         map_msg.info.origin.orientation.y = 0.0

@@ -12,7 +12,6 @@ def generate_launch_description():
     rob_loca_dir = get_package_share_directory('swisscat_simulation')
     rvizconfig = LaunchConfiguration('rvizconfig', default=os.path.join(rob_loca_dir, 'rviz', 'loca.rviz'))
     urdf_path = os.path.join(rob_loca_dir, 'urdf/edison0.urdf')
-    namespace= 'Robot1'
     robot_state_publisher_node = Node(
          package='robot_state_publisher',
          executable='robot_state_publisher',
@@ -40,13 +39,12 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         arguments=['-d', rvizconfig],
-        namespace=namespace,
         output='screen',
     )
 
     return LaunchDescription([
         rviz_node,
-        #static_transform_publisher_node,
-        transforms_node,
-        joint_state_publisher_node
+        static_transform_publisher_node,
+        #transforms_node,
+        #joint_state_publisher_node
     ])
