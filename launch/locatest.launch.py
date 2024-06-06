@@ -12,8 +12,8 @@ def generate_launch_description():
     rob_loca_dir = get_package_share_directory('swisscat_simulation')
     map_path = os.path.join(rob_loca_dir, 'maps', 'circuit.yaml')
     nav2_params_path = os.path.join(rob_loca_dir, 'params/nav_params.yaml')
-    init_poses = ['0.6', '6', '0', '1.5707',
-                  '0.5', '1', '0', '0',
+    init_poses = ['0.7', '6', '0', '-1.5707',
+                  '0.3', '0', '0', '1.5707',
                   '-1.28', '3.07', '0', '1.5707',
                   '1.10', '-3.595', '0', '1.5707',
                   '1.10', '-4.548', '0', '1.5707']

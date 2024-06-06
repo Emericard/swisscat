@@ -12,8 +12,11 @@ class OvertakeNode(Node):
         self.robot1_pos_sub = self.create_subscription(Odometry, '/Robot1/odom', self.robot1_pos_callback, 10)
         self.robot2_pos_sub = self.create_subscription(Odometry, '/Robot2/odom', self.robot2_pos_callback, 10)
         self.pose_pub = self.create_publisher(Twist, '/Robot2/cmd_vel', 10)
+        self.pose_pub_1 = self.create_publisher(Twist, '/Robot1/cmd_vel', 10)
         self.resolution = 0.1  # Example resolution of the occupancy grid (meters per cell)
         self.state_ = 0
+        self.speed = 0
+        self.robot1_position = Odometry()
 
     pub_ = None
     regions_ = {
@@ -60,7 +63,6 @@ class OvertakeNode(Node):
         return diff
                                     
     def scan(self):
-        # Convert robot's position to grid coordinates
         nb_rays = 72
         # Ray casting to find nearest obstacle
         scan = [None]*nb_rays
@@ -68,10 +70,10 @@ class OvertakeNode(Node):
         for i in range(nb_rays):  # Cast rays in 5 degree increments
             range_angles = range(0,360,int(360/nb_rays))
             angle_rad = robot_angle + math.radians(range_angles[i])
-            if abs(self.angle_difference_radians(angle_rad, math.pi)) > pi/2 :
-                distance = sqrt(((self.robot2_position.pose.pose.position.x-0.75))**2+(((self.robot2_position.pose.pose.position.x-0.75)*math.tan(angle_rad))**2))
-            else :
+            if abs(self.angle_difference_radians(angle_rad, 0)) > math.pi/2 :
                 distance = sqrt(((self.robot2_position.pose.pose.position.x-0.15))**2+(((self.robot2_position.pose.pose.position.x-0.15)*math.tan(angle_rad))**2))
+            else :
+                distance = sqrt(((self.robot2_position.pose.pose.position.x-0.75))**2+(((self.robot2_position.pose.pose.position.x-0.75)*math.tan(angle_rad))**2))
             scan[i] = distance
         return scan
     
@@ -79,53 +81,94 @@ class OvertakeNode(Node):
         regions = {
             'right':  min(msg[9:26]),
             'fright': min(msg[0:17]),
-            'front':  min(msg[0:9]),
+            'front':  min(min(msg[0:17], msg[-18:-1])),
             'fleft':  min(msg[54:72]),
             'left':   min(msg[45:63]),
         }
         return regions
                 
-            
     def take_action(self):
-        regions = self.regions_action(self.scan())
-             
-        d = 0.01
-        
-        if regions['front'] > d and regions['fleft'] > d and regions['fright'] > d:
-            self.change_state(0)
-        elif regions['front'] > d and regions['fleft'] > d and regions['fright'] < d:
-            self.change_state(2)
-        elif regions['front'] > d and regions['fleft'] < d and regions['fright'] > d:
-            self.change_state(0)
-        elif regions['front'] > d and regions['fleft'] < d and regions['fright'] < d:
-            self.change_state(0)
-        elif regions['front'] < d and regions['fleft'] > d and regions['fright'] > d:
-            self.change_state(1)
-        elif regions['front'] < d and regions['fleft'] > d and regions['fright'] < d:
-            self.change_state(1)
-        elif regions['front'] < d and regions['fleft'] < d and regions['fright'] > d:
-            self.change_state(1)
-        elif regions['front'] < d and regions['fleft'] < d and regions['fright'] < d:
-            self.change_state(1)
-        
-        else:
-            rclpy.loginfo(regions)
+        distance_to_robot = sqrt(((self.robot2_position.pose.pose.position.x-self.robot1_position.pose.pose.position.x))**2+(self.robot2_position.pose.pose.position.y-self.robot1_position.pose.pose.position.y)**2)
+        if distance_to_robot > 0.2 :
+            # set speed 
+            if distance_to_robot < 2 and distance_to_robot> 0.2 :
+                self.speed = distance_to_robot * 0.01
+                midline = 0.25
+                margin = 0.2
+            else : 
+                self.speed = 0.02
+                midline = 0.45
+                margin = 0.15
+            if self.robot2_position.pose.pose.position.x > midline : 
+                if self.robot2_position.pose.pose.position.x > midline + margin:
+                    self.change_state(1)
+                else :
+                    self.change_state(2)
+            else :
+                if self.robot2_position.pose.pose.position.x < midline - margin:
+                    self.change_state(3)
+                else :
+                    self.change_state(4)
+        else :
+            self.change_state(99)
         self.publish_pose()
-    
+        self.get_logger().info(str(self.speed))
+
+
+
+    def take_action_scan(self):
+        regions = self.regions_action(self.scan())
+        d = 0.1
+
+        distance_to_robot = sqrt(((self.robot2_position.pose.pose.position.x-self.robot1_position.pose.pose.position.x))**2+(self.robot2_position.pose.pose.position.y-self.robot1_position.pose.pose.position.y)**2)
+        if distance_to_robot > 1.5:
+            if regions['front'] > 3*d and regions['left'] > d and regions['right'] > d:
+                self.change_state(0)
+            elif regions['front'] > 3*d and regions['left'] > d and regions['right'] < d:
+                self.change_state(4)
+            elif regions['front'] > 3*d and regions['left'] < d and regions['right'] > d:
+                self.change_state(2)
+            elif regions['front'] > 3*d and regions['left'] < d and regions['right'] < d:
+                self.change_state(0)
+            elif regions['front'] < 3*d and regions['left'] > d and regions['right'] > d:
+                self.change_state(0)
+            elif regions['front'] < 3*d and regions['left'] > d and regions['right'] < d:
+                self.change_state(3)
+            elif regions['front'] < 3*d and regions['left'] < d and regions['right'] > d:
+                self.change_state(1)
+            elif regions['front'] < 3*d and regions['left'] < d and regions['right'] < d:
+                self.change_state(1)
+        else :
+            self.change_state(99)
+        self.publish_pose()
+        self.get_logger().info(str(self.state_))
+
     def publish_pose(self) :  
         msg = Twist()
-        if self.state_ == 0: # find wall
-            msg.linear.x = 0.2
-            msg.angular.z = -0.3
+        if self.state_ == 0: # forward 
+            msg.linear.x = self.speed * 5
         elif self.state_ == 1: # turn left
-            msg.angular.z = 0.3
-        elif self.state_ == 2: # follow wall
-            msg.linear.x = 0.5
+            msg.linear.x = self.speed * 1.0
+            msg.angular.z = - self.speed * 3
+        elif self.state_ == 3: # turn right
+            msg.linear.x = self.speed * 1.0
+            msg.angular.z = self.speed * 3
+        elif self.state_ == 2: # go forward and left
+            msg.linear.x = self.speed * 5
+            msg.angular.z = - self.speed * 2
+        elif self.state_ == 4: # go forward and right
+            msg.linear.x = self.speed * 5
+            msg.angular.z = self.speed * 2
         else:
-            rclpy.logerr('Unknown state!')
+            msg.linear.x = 0.0
+            msg.angular.z = 0.0
+            self.get_logger().info('Overtake distance ')
                     
         self.pose_pub.publish(msg)
-        self.get_logger().info('Publishing Robot2/Twist')
+        msg_1 = Twist()
+        msg_1.linear.x = 0.02
+        self.pose_pub_1.publish(msg_1)
+        #self.get_logger().info('Publishing Robot2/Twist')
 
     def change_state(self, state):
         if state is not self.state_:

@@ -1,0 +1,19 @@
+rosbag2_bagfile_information:
+  version: 4
+  storage_identifier: sqlite3
+  relative_file_paths:
+    - Test2_0.db3
+  duration:
+    nanoseconds: 62779922963
+  starting_time:
+    nanoseconds_since_epoch: 1717340249074676485
+  message_count: 6254
+  topics_with_message_count:
+    - topic_metadata:
+        name: /Robot2/odom
+        type: nav_msgs/msg/Odometry
+        serialization_format: cdr
+        offered_qos_profiles: ""
+      message_count: 6254
+  compression_format: ""
+  compression_mode: ""
